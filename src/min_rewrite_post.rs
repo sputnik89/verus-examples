@@ -2,7 +2,7 @@ use vstd::prelude::*;
 
 verus! {
 
-// incorrect 
+// correct spec (written in a different way), f
 fn min(s: &Vec<i32>) -> (m: i32)
     requires s.len() > 0,
     ensures !(exists|i: int| 0 <= i < s@.len() && s@[i] < m),
