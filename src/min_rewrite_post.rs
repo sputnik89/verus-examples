@@ -2,7 +2,7 @@ use vstd::prelude::*;
 
 verus! {
 
-// correct spec (written in a different way), f
+// correct spec (written in a different way) + correct implementation + correct proof
 fn min(s: &Vec<i32>) -> (m: i32)
     requires s.len() > 0,
     ensures !(exists|i: int| 0 <= i < s@.len() && s@[i] < m),
@@ -12,7 +12,7 @@ fn min(s: &Vec<i32>) -> (m: i32)
     while i < s.len()
         invariant
             min_idx < s.len(),
-            // forall|k: int| 0 <= k < i ==> s@[k] >= s@[min_idx as int],
+            forall|k: int| 0 <= k < i ==> s@[k] >= s@[min_idx as int],
         decreases s.len()-i,
     {
         if s[i] < s[min_idx] {

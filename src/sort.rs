@@ -2,18 +2,18 @@ use vstd::prelude::*;
 
 verus! {
 
-pub(crate) open spec fn sorted_forall(s: Seq<i32>) -> bool {
+spec fn sorted_forall(s: Seq<i32>) -> bool {
     forall|i: int, j: int| 0 <= i < j < s.len() ==> s[i] <= s[j]
 }
 
-pub(crate) open spec fn sorted_recursive(s: Seq<i32>) -> bool
+spec fn sorted_recursive(s: Seq<i32>) -> bool
     decreases s,
 {
     if s.len() <= 1 { true }
     else { s[0] <= s[1] && sorted_recursive(s.drop_first()) }
 }
 
-pub(crate) fn swap(s: &mut Vec<i32>, i: usize, j: usize)
+fn swap(s: &mut Vec<i32>, i: usize, j: usize)
     requires i < s@.len(), j < s@.len(),
     ensures final(s)@ == old(s)@.update(i as int, old(s)@[j as int])
                                 .update(j as int, old(s)@[i as int]),
@@ -23,7 +23,7 @@ pub(crate) fn swap(s: &mut Vec<i32>, i: usize, j: usize)
     s[j] = tmp;
 }
 
-pub(crate) fn sort(s: &mut Vec<i32>)
+fn sort(s: &mut Vec<i32>)
     ensures sorted_forall(final(s)@),
 {
     let mut i = 0;
