@@ -1,4 +1,6 @@
 mod sorted_vec;
+mod selection_vec;
+pub use selection_vec::SelectionVecDatabase;
 mod unsorted_vec;
 pub use unsorted_vec::UnsortedVecDatabase;
 #[cfg(test)]
