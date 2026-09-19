@@ -1,4 +1,6 @@
 use vstd::prelude::*;
+use vstd::resource::Loc;
+use vstd::resource::ghost_var::GhostVar;
 
 verus! {
 
@@ -6,7 +8,15 @@ verus! {
 // the correspondence of DatabaseState and the actual storage representation
 // formally!
 pub tracked struct DatabaseState {
+    pub tracked var: GhostVar<Map<Seq<char>, i32>>,
     pub ghost contents: Map<Seq<char>, i32>,
+}
+
+impl DatabaseState {
+    // DatabaseState must be uniquely identified
+    pub open spec fn linked(self, id: Loc) -> bool {
+        self.var.id() == id && self.var@ == self.contents
+    }
 }
 
 pub open spec fn key_lt(a: Seq<char>, b: Seq<char>) -> bool
@@ -57,8 +67,8 @@ macro_rules! impl_db {
                 // point.
                 atomically ($get_lp) {
                     (state: DatabaseState) -> (post: vstd::atomic::Commit<DatabaseState>),
-                    requires true,
-                    ensures post@.contents == state.contents,
+                    requires state.linked(self.id()),
+                    ensures post@.linked(self.id()) && post@.contents == state.contents,
                     outer_mask any,
                     inner_mask none,
                 },
@@ -79,8 +89,8 @@ macro_rules! impl_db {
             )
                 atomically ($put_lp) {
                     (state: DatabaseState) -> (post: vstd::atomic::Commit<DatabaseState>),
-                    requires true,
-                    ensures post@.contents
+                    requires state.linked(self.id()),
+                    ensures post@.linked(self.id()) && post@.contents
                         == state.contents.insert($put_key@, $put_value),
                     outer_mask any,
                     inner_mask none,
@@ -97,8 +107,8 @@ macro_rules! impl_db {
             ) -> (result: Vec<(String, i32)>)
                 atomically ($scan_lp) {
                     (state: DatabaseState) -> (post: vstd::atomic::Commit<DatabaseState>),
-                    requires true,
-                    ensures post@.contents == state.contents,
+                    requires state.linked(self.id()),
+                    ensures post@.linked(self.id()) && post@.contents == state.contents,
                     outer_mask any,
                     inner_mask none,
                 },
@@ -130,8 +140,8 @@ macro_rules! impl_db {
             pub fn sort(&self) -> (result: Vec<(String, i32)>)
                 atomically ($sort_lp) {
                     (state: DatabaseState) -> (post: vstd::atomic::Commit<DatabaseState>),
-                    requires true,
-                    ensures post@.contents == state.contents,
+                    requires state.linked(self.id()),
+                    ensures post@.linked(self.id()) && post@.contents == state.contents,
                     outer_mask any,
                     inner_mask none,
                 },
