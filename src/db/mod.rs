@@ -3,6 +3,8 @@ mod selection_vec;
 pub use selection_vec::SelectionVecDatabase;
 mod unsorted_vec;
 pub use unsorted_vec::UnsortedVecDatabase;
+mod binary_search_vec;
+pub use binary_search_vec::BinarySearchVecDatabase;
 #[cfg(test)]
 mod tests;
 pub use sorted_vec::SortedVecDatabase;
