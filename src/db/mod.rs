@@ -18,6 +18,9 @@ verus! {
 
 // abstract view of any implementation of the database is an abstract map
 pub trait Database: View<V = Map<KeyType, ValueType>> {
+    fn put(&mut self, key: String, value: i32)
+        ensures final(self)@ == old(self)@.insert(key@, value);
+    
     fn get(&self, key: &KeyType) -> (result: Option<&ValueType>)
         ensures
             match result {
